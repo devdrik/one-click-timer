@@ -8,14 +8,14 @@ const columns = [
     width: 90 
   },
   {
-    field: 'firstName',
-    headerName: 'First name',
+    field: 'date',
+    headerName: 'Date',
     width: 150,
     editable: true,
   },
   {
-    field: 'lastName',
-    headerName: 'Last name',
+    field: 'state',
+    headerName: 'state',
     width: 150,
     editable: true,
   },
@@ -51,7 +51,7 @@ const rows = [
   { id: 9, lastName: 'Roxie', firstName: 'Harvey', age: 65 },
 ];
 
-export default function DataGridDemo() {
+const Table = () => {
   return (
     <div style={{ height: 400, width: '100%' }}>
       <DataGrid
@@ -65,3 +65,5 @@ export default function DataGridDemo() {
     </div>
   );
 }
+
+export default Table;

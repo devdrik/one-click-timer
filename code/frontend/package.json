@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@mui/icons-material": "^5.0.5",
     "@mui/material": "^5.0.6",
     "@mui/x-data-grid": "^4.0.2",
     "@testing-library/jest-dom": "^5.15.0",

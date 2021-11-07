@@ -1,11 +1,17 @@
 import * as React from 'react';
 import Talbe from '../components/Table'
+import WorkingTime from '../components/WorkingTime'
+import WorkToggler from '../components/WorkToggler'
 
 
-export default function Main() {
+const Main = () => {
   return (
     <>
-        <Talbe />
+      <WorkToggler />
+      <WorkingTime />
+      <Talbe />
     </>
   );
 }
+
+export default Main;
