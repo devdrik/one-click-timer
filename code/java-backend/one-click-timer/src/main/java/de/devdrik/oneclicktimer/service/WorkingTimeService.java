@@ -26,4 +26,8 @@ public class WorkingTimeService {
 
         return savedWorkingTime.getState().getStateString();
     }
+
+    public Iterable<WorkingTime> findAll() {
+        return workingTimeRepository.findAll();
+    }
 }

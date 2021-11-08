@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import de.devdrik.oneclicktimer.persistence.models.WorkingTime;
 import de.devdrik.oneclicktimer.service.WorkingTimeService;
 
 @RestController
@@ -21,6 +22,11 @@ public class WorkingTimeController {
     @GetMapping("/toggle")
     public ResponseEntity<String> toggleTimer () {
         return new ResponseEntity<>(workingTimeService.toggleTimer(), HttpStatus.OK);
+    }
+
+    @GetMapping("/getAll")
+    public ResponseEntity<Iterable<WorkingTime>> getAll () {
+        return new ResponseEntity<>(workingTimeService.findAll(), HttpStatus.OK);
     }
     
 }

@@ -7,7 +7,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-import org.springframework.data.annotation.CreatedDate;
+import org.hibernate.annotations.CreationTimestamp;
 
 import de.devdrik.oneclicktimer.enums.State;
 import lombok.Getter;
@@ -22,12 +22,12 @@ public class WorkingTime {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
-    @CreatedDate
-    LocalDateTime createdDate;
+    @CreationTimestamp
+    private LocalDateTime createdDate;
 
-    State state;
+    private State state;
     
     public WorkingTime(State state) {
         this.state = state;
