@@ -1,0 +1,42 @@
+version: "3.3"
+  
+services:
+  oneclicktimer-backend:
+    container_name: oneclicktimer-backend
+    image: one-click-timer:0.0.1
+    restart: on-failure
+    ports:
+      - 8085:8080
+    environment:
+      - spring_datasource_url=jdbc:mysql://oneclicktimer-db:3306/oneclicktimer
+      - spring_datasource_username=oneclicktimer
+      - spring_datasource_password=oneclicktimer
+      - spring_datasource_driver-class-name=com.mysql.cj.jdbc.Driver
+      - spring_jpa_database-platform=org.hibernate.dialect.MySQL8Dialect
+      - spring_jpa_hibernate_ddl-auto=create
+    depends_on:
+      - oneclicktimer-db
+    networks:
+      - dbnet
+
+  oneclicktimer-db:
+    image: mysql:8.0
+    container_name: oneclicktimer-db
+    restart: always
+    ports:
+      - '3307:3306'
+    environment:
+      MYSQL_DATABASE: oneclicktimer
+      MYSQL_USER: oneclicktimer
+      MYSQL_PASSWORD: oneclicktimer
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - oneclicktimer-volume:/var/lib/mysql
+    networks:
+      - dbnet
+
+volumes:
+  oneclicktimer-volume:
+
+networks:
+  dbnet:
