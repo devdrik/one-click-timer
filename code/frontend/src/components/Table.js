@@ -1,31 +1,23 @@
 import { DataGrid } from '@mui/x-data-grid';
-import { getAllWorkingTimes } from '../services/WorkingTimeService'
+import { getAllWorkingTimes, updateWorkingTime } from '../services/WorkingTimeService'
 import { useState, useEffect } from 'react';
 
+const dateOptions = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' };
+
 const columns = [
-  { 
-    field: 'id', 
-    headerName: 'ID', 
-    width: 90 
-  },
   {
-    field: 'date',
+    field: 'createdDate',
     headerName: 'Date',
-    width: 200,
+    minWidth: 200,
+    flex: 1,
     editable: true,
-    valueGetter: (params) => new Date(params.getValue(params.id, 'createdDate')).toLocaleDateString()
+    valueFormatter: params => new Date(params.row.createdDate).toLocaleString('en-EN', dateOptions)
   },
-  {
-    field: 'time',
-    headerName: 'Time',
-    width: 200,
-    editable: true,
-    valueGetter: (params) => new Date(params.getValue(params.id, 'createdDate')).toLocaleTimeString()
-    },
   {
     field: 'state',
     headerName: 'state',
-    width: 150,
+    minWidth: 100,
+    flex: 0.2,
     editable: false,
   },
 ];
@@ -35,6 +27,27 @@ const Table = () => {
 
   const [workingTimes, setWorkingTimes] = useState([]);
 
+  const updateWorkingTimes = params => {
+    console.log(`params`, params)
+    updateWorkingTime(workingTimes
+        .filter(item => item.id === params.id)
+        .map(item => ({...item, createdDate: params.value}))[0])
+      .then(resp => {
+        setWorkingTimes(workingTimes.map(item => item.id === params.id ? resp.data : item))
+        console.log(`resp`, resp)
+      })
+  }
+
+  const handleCellEdit = (params, event) => {
+    console.log(`params`, params)
+    switch(params.field) {
+      case 'createdDate':
+        updateWorkingTimes(params)
+        break;
+      default:
+    }
+  }
+
   useEffect(() => {
     getAllWorkingTimes().then(resp => {
       setWorkingTimes(resp.data)
@@ -42,14 +55,15 @@ const Table = () => {
   }, [setWorkingTimes])
 
   return (
-    <div style={{ height: 400, width: '100%' }}>
+    <div style={{ height: 650, width: '100%' }}>
       <DataGrid
         rows={workingTimes}
         columns={columns}
-        pageSize={5}
+        pageSize={10}
         rowsPerPageOptions={[10]}
         checkboxSelection={false}
         disableSelectionOnClick
+        onCellEditCommit={handleCellEdit}
 
       />
     </div>
