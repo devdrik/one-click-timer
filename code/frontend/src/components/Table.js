@@ -2,31 +2,40 @@ import { DataGrid } from '@mui/x-data-grid';
 import { getAllWorkingTimes, updateWorkingTime } from '../services/WorkingTimeService'
 import { useState, useEffect } from 'react';
 
-const dateOptions = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' };
-
+const dateOptions = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+const locale = 'de-DE'
 const columns = [
+  {
+    field: 'date',
+    headerName: 'Date',
+    minWidth: 150,
+    flex: 1.5,
+    editable: false,
+    valueGetter: params => params.row.ON.createdDate,
+    valueFormatter: params => new Date(params.row.ON.createdDate).toLocaleDateString(locale, dateOptions)
+  },
   {
     field: 'ON',
     headerName: 'From',
-    minWidth: 250,
+    minWidth: 120,
     flex: 1,
     editable: true,
     valueGetter: params => params.value.createdDate,
-    valueFormatter: params => new Date(params.row.ON.createdDate).toLocaleString('en-EN', dateOptions)
+    valueFormatter: params => new Date(params.row.ON.createdDate).toLocaleTimeString()
   },
   {
     field: 'OFF',
     headerName: 'To',
-    minWidth: 250,
+    minWidth: 100,
     flex: 1,
     editable: true,
     valueGetter: params => params.value.createdDate,
-    valueFormatter: params => new Date(params.row.OFF.createdDate).toLocaleString('en-EN', dateOptions)
+    valueFormatter: params => new Date(params.row.OFF.createdDate).toLocaleTimeString()
   },
   {
     field: 'duration',
     headerName: 'time',
-    minWidth: 200,
+    minWidth: 150,
     flex: 1,
     editable: false,
     valueFormatter: params => new Date(params.getValue(params.id, 'duration')).toISOString().slice(11,-5)
@@ -81,12 +90,12 @@ const Table = () => {
         rowId++;
       }
     })
-    if(data[data.length-1] === 'ON') {
+    if(data[data.length-1].state === 'ON') {
       entry.id = rowId;
-      entry.duration = new Date() - new Date(entry.ON)
+      entry.OFF = {createdDate: new Date()};
+      entry.duration = new Date() - new Date(entry.ON.createdDate)
       preparedData.push(entry);
     }
-    console.log(`preparedData`, preparedData)
     return preparedData;
   }
 
