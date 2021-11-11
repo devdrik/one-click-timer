@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.expression.spel.support.ReflectivePropertyAccessor.OptimalPropertyAccessor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +32,11 @@ public class WorkingTimeController {
     @GetMapping("/toggle")
     public ResponseEntity<String> toggleTimer() {
         return new ResponseEntity<>(workingTimeService.toggleTimer(), HttpStatus.OK);
+    }
+
+    @GetMapping("/state")
+    public ResponseEntity<String> getState() throws NotFoundException {
+        return new ResponseEntity<>(workingTimeService.getState(), HttpStatus.OK);
     }
 
     @GetMapping("/getall")

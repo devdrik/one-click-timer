@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.stereotype.Service;
 
 import de.devdrik.oneclicktimer.enums.State;
@@ -61,5 +62,13 @@ public class WorkingTimeService {
             duration = duration.plus(Duration.between(current.getCreatedDate(), LocalDateTime.now()));
         }
         return duration;
+    }
+
+    public String getState() throws NotFoundException {
+        Optional<WorkingTime> workingTimeOptional = workingTimeRepository.findLatest();
+        if (workingTimeOptional.isEmpty()) {
+            throw new NotFoundException();
+        }
+        return workingTimeOptional.get().getState().getStateString();
     }
 }
