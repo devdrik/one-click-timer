@@ -3,6 +3,7 @@ package de.devdrik.oneclicktimer.service;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Iterator;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,14 @@ public class WorkingTimeService {
 
     public Iterable<WorkingTime> findAll() {
         return workingTimeRepository.findAll();
+    }
+
+    public Optional<WorkingTime> update(WorkingTime workingTime) {
+        Optional<WorkingTime> updated = Optional.empty();
+        if(workingTimeRepository.findById(workingTime.getId()).isPresent()) {
+            updated = Optional.of(workingTimeRepository.save(workingTime));
+        }
+        return updated;
     }
 
     public Duration getCumulativeWorkingTimeOn(LocalDateTime date) {
