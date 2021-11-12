@@ -56,7 +56,6 @@ public class WorkingTimeService {
                 duration = duration.plus(Duration.between(previousTime, current.getCreatedDate()));
             }
             previousTime = current.getCreatedDate();
-            System.out.println(previousTime.toString());
         }
         if (current != null && State.ON.equals(current.getState())) {
             duration = duration.plus(Duration.between(current.getCreatedDate(), LocalDateTime.now()));

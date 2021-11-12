@@ -6,17 +6,18 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
-import org.springframework.expression.spel.support.ReflectivePropertyAccessor.OptimalPropertyAccessor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import de.devdrik.oneclicktimer.persistence.models.WorkingTime;
 import de.devdrik.oneclicktimer.service.WorkingTimeService;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.PathVariable;
 
 
 @RestController
@@ -35,8 +36,14 @@ public class WorkingTimeController {
     }
 
     @GetMapping("/state")
-    public ResponseEntity<String> getState() throws NotFoundException {
-        return new ResponseEntity<>(workingTimeService.getState(), HttpStatus.OK);
+    public ResponseEntity<String> getState() {
+        ResponseEntity<String> response; 
+        try {
+            response = ResponseEntity.status(HttpStatus.OK).body(workingTimeService.getState());
+        } catch (NotFoundException e) {
+            response = ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return response;
     }
 
     @GetMapping("/getall")
@@ -45,9 +52,8 @@ public class WorkingTimeController {
     }
 
     @GetMapping("/getduration")
-    public ResponseEntity<Duration> getDuration() {
-        // TODO: use date as a parameter instead of today
-        return new ResponseEntity<>(workingTimeService.getCumulativeWorkingTimeOn(LocalDateTime.now()), HttpStatus.OK);
+    public ResponseEntity<Duration> getDuration(@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime date) {
+        return new ResponseEntity<>(workingTimeService.getCumulativeWorkingTimeOn(date), HttpStatus.OK);
     }
 
     @PutMapping(value="workingtime/{id}")
