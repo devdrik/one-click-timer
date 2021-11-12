@@ -4,6 +4,7 @@ const WORKING_TIME_URL = API_URL + "getall";
 const WORKING_TIME_UPDATE_URL = API_URL + "workingtime";
 const WORKING_TIME_TOGGLE_URL = API_URL + "toggle";
 const WORKING_TIME_GET_STATE_URL = API_URL + "state";
+const WORKING_TIME_GET_DURATION_URL = API_URL + "getduration";
 
 export const getAllWorkingTimes = () => {
   return axios.get(WORKING_TIME_URL);
@@ -19,4 +20,8 @@ export const toggleWorkingTime = () => {
 
 export const getWorkingState = () => {
   return axios.get(WORKING_TIME_GET_STATE_URL);
+}
+
+export const getDuration = (date) => {
+  return axios.get(`${WORKING_TIME_GET_DURATION_URL}?date=${date}`);
 }

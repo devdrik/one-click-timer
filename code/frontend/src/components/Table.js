@@ -1,9 +1,9 @@
 import { DataGrid } from '@mui/x-data-grid';
 import { getAllWorkingTimes, updateWorkingTime } from '../services/WorkingTimeService'
 import { useState, useEffect } from 'react';
+import { locale } from '../config/config'
 
 const dateOptions = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
-const locale = 'de-DE'
 const columns = [
   {
     field: 'date',
@@ -90,9 +90,10 @@ const Table = () => {
         rowId++;
       }
     })
-    if(data[data.length-1].state === 'ON') {
+    if(data[data.length-1] && data[data.length-1].state === 'ON') {
       entry.id = rowId;
       entry.OFF = {createdDate: new Date()};
+      // This can lead to a wrong live duration, because locale might be off
       entry.duration = new Date() - new Date(entry.ON.createdDate)
       preparedData.push(entry);
     }
