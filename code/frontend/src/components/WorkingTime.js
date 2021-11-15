@@ -1,21 +1,52 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 import { getDuration } from '../services/WorkingTimeService';
-import { locale } from '../config/config'
+import { Box, Chip } from '@material-ui/core';
+import MobileDatePicker from '@mui/lab/MobileDatePicker';
+import { TextField } from '@mui/material';
+import moment from 'moment';
+import { datePickerformat } from '../config/config'
 
 const WorkingTime = () => {
-  const [workingTime, setWorkingTime] = useState("");
-  const date=new Date().toLocaleDateString(locale);
+  
+  const formatDuration = duration => {
+    return moment.utc(moment.duration(duration).as('milliseconds')).format('HH:mm:ss')
+  }
+
+  const [workingTime, setWorkingTime] = useState(formatDuration("PT0"));
+  const [date, setDate] = useState(new Date());
+
+  const updateDate = newDate => {
+    setDate(newDate);
+    getDuration(newDate.toISOString())
+      .then(resp => setWorkingTime(formatDuration(resp.data)));
+  }
 
   useEffect(() => {
-    getDuration(new Date().toISOString()).then(resp => setWorkingTime(resp.data));
+    updateDate(new Date())
   }, [setWorkingTime])
 
   return (
-    <div>
-      On {date} you worked {workingTime}
-    </div>
+    <>
+    <Box display="inline-flex" flexDirection="column" >
+      <Box sx={{display: "inline-flex", p: "10px"}}>
+        <MobileDatePicker
+            label="choose date"
+            inputFormat={datePickerformat}
+            disableFuture
+            value={date}
+            onChange={updateDate}
+            renderInput={(params) => <TextField {...params} />}
+        />
+      </Box>
+      <Box sx={{display: "inline-flex", p: "5px 0 10px 10px"}}>
+        <Chip label={"time worked: " + workingTime} />
+        {/* <Chip label={moment.duration(workingTime).format("HH:mm:ss")} /> */}
+      </Box>
+    </Box>
+    </>
   );
 }
 
 export default WorkingTime;
+

@@ -2,11 +2,12 @@ import Talbe from '../components/Table'
 import WorkingTime from '../components/WorkingTime'
 import WorkToggler from '../components/WorkToggler'
 
+
 const Main = () => {
   return (
     <>
-      <WorkToggler />
-      <WorkingTime />
+        <WorkToggler />
+        <WorkingTime />
       <Talbe />
     </>
   );
