@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { getDuration } from '../services/WorkingTimeService';
 import { Box, Chip } from '@material-ui/core';
 import MobileDatePicker from '@mui/lab/MobileDatePicker';
@@ -16,15 +16,15 @@ const WorkingTime = () => {
   const [workingTime, setWorkingTime] = useState(formatDuration("PT0"));
   const [date, setDate] = useState(new Date());
 
-  const updateDate = newDate => {
+  const updateDate = useCallback( newDate => {
     setDate(newDate);
     getDuration(newDate.toISOString())
       .then(resp => setWorkingTime(formatDuration(resp.data)));
-  }
+  }, [])
 
   useEffect(() => {
     updateDate(new Date())
-  }, [setWorkingTime])
+  }, [updateDate])
 
   return (
     <>
@@ -41,7 +41,6 @@ const WorkingTime = () => {
       </Box>
       <Box sx={{display: "inline-flex", p: "5px 0 10px 10px"}}>
         <Chip label={"time worked: " + workingTime} />
-        {/* <Chip label={moment.duration(workingTime).format("HH:mm:ss")} /> */}
       </Box>
     </Box>
     </>
