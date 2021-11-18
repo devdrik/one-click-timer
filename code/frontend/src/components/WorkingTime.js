@@ -15,16 +15,28 @@ const WorkingTime = () => {
 
   const [workingTime, setWorkingTime] = useState(formatDuration("PT0"));
   const [date, setDate] = useState(new Date());
-
-  const updateDate = useCallback( newDate => {
-    setDate(newDate);
+  
+  const updateDuration = useCallback((newDate) => {
     getDuration(newDate.toISOString())
       .then(resp => setWorkingTime(formatDuration(resp.data)));
   }, [])
 
+  const updateDate = useCallback( newDate => {
+    setDate(newDate);
+    updateDuration(newDate);
+  }, [updateDuration])
+
+
   useEffect(() => {
     updateDate(new Date())
   }, [updateDate])
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      updateDuration(date)
+    }, 1000);
+    return () => clearInterval(interval);
+  });
 
   return (
     <>
