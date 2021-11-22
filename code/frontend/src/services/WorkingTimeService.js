@@ -1,5 +1,5 @@
 import axios from "axios";
-const API_URL = "http://nuc01:8085/";
+import { API_URL } from '../config/config'
 const WORKING_TIME_URL = API_URL + "getall";
 const WORKING_TIME_UPDATE_URL = API_URL + "workingtime";
 const WORKING_TIME_TOGGLE_URL = API_URL + "toggle";
