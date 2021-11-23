@@ -2,4 +2,4 @@
 
 export const locale = "de-DE";
 export const datePickerformat = "DD.MM.YYYY";
-export const API_URL = "http://oneclicktimer-backend:8080/";
+export const API_URL = "http://nuc01:8085/";

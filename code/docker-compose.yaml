@@ -6,16 +6,14 @@ services:
     image: one-click-timer-frontend:1.0.0
     restart: on-failure
     ports:
-      - 81:81
-    networks:
-      - appnet
+      - "81:81"
 
   oneclicktimer-backend:
     container_name: oneclicktimer-backend
     image: one-click-timer-backend:1.0.0
     restart: on-failure
     ports:
-      - 8081:8080
+      - "8085:8080"
     environment:
       - spring_datasource_url=jdbc:mysql://oneclicktimer-db:3306/oneclicktimer
       - spring_datasource_username=oneclicktimer
@@ -27,14 +25,13 @@ services:
       - oneclicktimer-db
     networks:
       - dbnet
-      - appnet
 
   oneclicktimer-db:
     image: mysql:8.0
     container_name: oneclicktimer-db
     restart: always
     ports:
-      - '3307:3306'
+      - "3307:3306"
     environment:
       MYSQL_DATABASE: oneclicktimer
       MYSQL_USER: oneclicktimer
@@ -50,4 +47,3 @@ volumes:
 
 networks:
   dbnet:
-  appnet:
