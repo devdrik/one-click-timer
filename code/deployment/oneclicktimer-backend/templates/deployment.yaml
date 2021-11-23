@@ -35,16 +35,34 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
-              containerPort: 80
+              containerPort: 8080
               protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: /
-              port: http
-          readinessProbe:
-            httpGet:
-              path: /
-              port: http
+          # TODO: template values
+          env:
+            - name: spring_datasource_url
+              value: jdbc:mysql://oneclicktimer-backend-mysql:3306/oneclicktimer
+            - name: spring_datasource_driver-class-name
+              value: com.mysql.cj.jdbc.Driver
+            - name: spring_jpa_database-platform
+              value: org.hibernate.dialect.MySQL8Dialect
+            - name: spring_datasource_username
+              valueFrom: 
+                secretKeyRef:
+                  name: {{ .Values.db.secretName }}
+                  key: MYSQL_USER
+            - name: spring_datasource_password
+              valueFrom: 
+                secretKeyRef:
+                  name: {{ .Values.db.secretName }}
+                  key: mysql-password
+          # livenessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
+          # readinessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
