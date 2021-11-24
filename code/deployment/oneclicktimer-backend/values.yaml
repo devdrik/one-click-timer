@@ -43,18 +43,15 @@ service:
 ingress:
   enabled: true
   className: ""
-  annotations: {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
   hosts:
     - host: nuc02
       paths:
-        - path: /oct/api/
-          pathType: ImplementationSpecific
+        - path: /oct/api(/|$)(.*)
+          pathType: Prefix
   tls: []
   #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
@@ -89,3 +86,4 @@ mysql:
 
 db:
   secretName: db-secret
+  password: oneclicktimer

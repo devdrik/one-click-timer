@@ -27,6 +27,16 @@ spec:
       serviceAccountName: {{ include "oneclicktimer-backend.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      initContainers:
+        - name: wait-for-db
+          image: monasca/mysql-init:1.5.5
+          command: 
+            - 'sh'
+            - '-c'
+            - 'until mysql --protocol TCP -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" -h "oneclicktimer-backend-mysql" -e "show databases;"; do echo waiting for db; sleep 2; done;'
+          envFrom:
+            - secretRef:
+                name: {{ .Values.db.secretName }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
@@ -45,6 +55,8 @@ spec:
               value: com.mysql.cj.jdbc.Driver
             - name: spring_jpa_database-platform
               value: org.hibernate.dialect.MySQL8Dialect
+            - name: spring_jpa_hibernate_ddl-auto
+              value: update
             - name: spring_datasource_username
               valueFrom: 
                 secretKeyRef:
