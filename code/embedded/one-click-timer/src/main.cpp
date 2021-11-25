@@ -11,7 +11,7 @@
 HTTPClient http;
 WiFiClient client;
 
-String host = "http://nuc01:8085";
+String host = "http://nuc02/oct/api";
 
 WS2812FX ws2812fx = WS2812FX(NUM_LEDS, LED_PIN, NEO_GRB + NEO_KHZ800);
 
