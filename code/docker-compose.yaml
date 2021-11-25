@@ -6,7 +6,7 @@ services:
     image: one-click-timer-frontend:1.0.0
     restart: on-failure
     ports:
-      - "81:81"
+      - "81:80"
 
   oneclicktimer-backend:
     container_name: oneclicktimer-backend
