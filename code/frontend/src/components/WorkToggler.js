@@ -41,11 +41,22 @@ const WorkToggler = () => {
     })
   }
 
-  useEffect(() => {
+  const updateState = () => {
     getWorkingState().then(
       resp => setSelected(resp.data === 'on')
-    )
+    );
+  }
+
+  useEffect(() => {
+    updateState(setSelected);
   }, [setSelected])
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      updateState()
+    }, 1000);
+    return () => clearInterval(interval);
+  });
 
   return (
     <ToggleButton
@@ -61,3 +72,4 @@ const WorkToggler = () => {
 }
 
 export default WorkToggler;
+
