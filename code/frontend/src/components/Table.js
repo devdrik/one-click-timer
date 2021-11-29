@@ -1,6 +1,6 @@
 import { DataGrid } from '@mui/x-data-grid';
-import { getAllWorkingTimes, updateWorkingTime } from '../services/WorkingTimeService'
-import { useState, useEffect } from 'react';
+import { getAllWorkingTimesByDate, updateWorkingTime } from '../services/WorkingTimeService'
+import { useState, useEffect, useCallback } from 'react';
 import { locale } from '../config/config'
 
 const dateOptions = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
@@ -44,7 +44,7 @@ const columns = [
 
 let rawWorkingTimes = []
 
-const Table = () => {
+const Table = ({selectedDate, state}) => {
 
   const [workingTimes, setWorkingTimes] = useState([]);
 
@@ -61,7 +61,7 @@ const Table = () => {
     if (event.type === 'keydown') {
       event.preventDefault()
     }
-    let id, date;
+    let id, selectedDate;
     switch (event.type) {
       case 'click':
         id = params.row[params.field].id;
@@ -72,8 +72,8 @@ const Table = () => {
       default:
         id = undefined;
     }
-    date = params.value;
-    updateWorkingTimes(id, date);
+    selectedDate = params.value;
+    updateWorkingTimes(id, selectedDate);
   }
 
   const getPreparedData = data => {
@@ -100,12 +100,26 @@ const Table = () => {
     return preparedData;
   }
 
+  const getData = useCallback(
+    () => {
+      getAllWorkingTimesByDate(selectedDate).then(resp => {
+        rawWorkingTimes = resp.data;
+        setWorkingTimes(getPreparedData(rawWorkingTimes))
+      })
+    }, [selectedDate])
+
   useEffect(() => {
-    getAllWorkingTimes().then(resp => {
-      rawWorkingTimes = resp.data;
-      setWorkingTimes(getPreparedData(rawWorkingTimes))
-    })
-  }, [setWorkingTimes])
+    getData()
+  }, [getData])
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (state === 'on') {
+        getData()
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  });
 
   return (
     <div style={{ height: 650, width: '100%' }}>

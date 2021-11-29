@@ -7,24 +7,23 @@ import { TextField } from '@mui/material';
 import moment from 'moment';
 import { datePickerformat } from '../config/config'
 
-const WorkingTime = () => {
+const WorkingTime = ({selectedDate, setSelectedDate, state}) => {
   
   const formatDuration = duration => {
     return moment.utc(moment.duration(duration).as('milliseconds')).format('HH:mm:ss')
   }
 
   const [workingTime, setWorkingTime] = useState(formatDuration("PT0"));
-  const [date, setDate] = useState(new Date());
   
   const updateDuration = useCallback((newDate) => {
-    getDuration(newDate.toISOString())
+    getDuration(newDate)
       .then(resp => setWorkingTime(formatDuration(resp.data)));
   }, [])
 
   const updateDate = useCallback( newDate => {
-    setDate(newDate);
+    setSelectedDate(newDate);
     updateDuration(newDate);
-  }, [updateDuration])
+  }, [updateDuration, setSelectedDate])
 
 
   useEffect(() => {
@@ -33,7 +32,9 @@ const WorkingTime = () => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      updateDuration(date)
+      if( state === 'on') {
+        updateDuration(selectedDate)
+      }
     }, 1000);
     return () => clearInterval(interval);
   });
@@ -46,8 +47,8 @@ const WorkingTime = () => {
             label="choose date"
             inputFormat={datePickerformat}
             disableFuture
-            value={date}
-            onChange={updateDate}
+            value={selectedDate}
+            onChange={d => updateDate(new Date(d))}
             renderInput={(params) => <TextField {...params} />}
         />
       </Box>
