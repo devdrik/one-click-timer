@@ -1,11 +1,12 @@
 import * as React from 'react';
 import { useState, useEffect, useCallback } from 'react';
 import { getDuration } from '../services/WorkingTimeService';
-import { Box, Chip } from '@material-ui/core';
+import { Box, Chip, Typography } from '@material-ui/core';
 import MobileDatePicker from '@mui/lab/MobileDatePicker';
 import { TextField } from '@mui/material';
 import moment from 'moment';
 import { datePickerformat } from '../config/config'
+import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
 
 const WorkingTime = ({selectedDate, setSelectedDate, state}) => {
   
@@ -53,7 +54,10 @@ const WorkingTime = ({selectedDate, setSelectedDate, state}) => {
         />
       </Box>
       <Box sx={{display: "inline-flex", p: "5px 0 10px 10px"}}>
-        <Chip label={"time worked: " + workingTime} />
+        <Chip icon={<HourglassEmptyIcon fontSize="large" />} label={
+          <Typography style={{fontSize: "34px"}}>{workingTime}</Typography>
+          } 
+        />
       </Box>
     </Box>
     </>
