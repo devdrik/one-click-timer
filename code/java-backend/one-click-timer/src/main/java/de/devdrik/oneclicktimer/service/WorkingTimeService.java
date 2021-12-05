@@ -2,6 +2,7 @@ package de.devdrik.oneclicktimer.service;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Optional;
 
@@ -45,8 +46,12 @@ public class WorkingTimeService {
         return updated;
     }
 
+    public Collection<WorkingTime> findAllAtDate(LocalDateTime date) {
+        return workingTimeRepository.findAllBetween(date.toLocalDate().atStartOfDay(), date.toLocalDate().atTime(23, 59, 59));
+    }
+
     public Duration getCumulativeWorkingTimeOn(LocalDateTime date) {
-        Iterator<WorkingTime> timeList = workingTimeRepository.findAllBetween(date.toLocalDate().atStartOfDay(), date.toLocalDate().atTime(23, 59, 59)).iterator();
+        Iterator<WorkingTime> timeList = findAllAtDate(date).iterator();
         Duration duration = Duration.ZERO;
         LocalDateTime previousTime = null;
         WorkingTime current = null;
