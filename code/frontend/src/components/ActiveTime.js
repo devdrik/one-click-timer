@@ -8,7 +8,7 @@ import moment from 'moment';
 import { datePickerformat } from '../config/config'
 import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
 
-const WorkingTime = ({selectedDate, setSelectedDate, state}) => {
+const ActiveTime = ({selectedDate, setSelectedDate, state}) => {
   
   const formatDuration = duration => {
     return moment.utc(moment.duration(duration).as('milliseconds')).format('HH:mm:ss')
@@ -64,5 +64,5 @@ const WorkingTime = ({selectedDate, setSelectedDate, state}) => {
   );
 }
 
-export default WorkingTime;
+export default ActiveTime;
 
