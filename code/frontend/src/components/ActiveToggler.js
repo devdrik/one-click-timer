@@ -6,7 +6,7 @@ import ToggleButton from '@mui/material/ToggleButton';
 import { toggleWorkingTime, getWorkingState } from '../services/WorkingTimeService'
 import { Typography } from '@material-ui/core';
 
-const WorkToggler = ({state, setState}) => {
+const ActiveToggler = ({state, setState}) => {
 
   const getActiveIcon = () => (
     <div>
@@ -40,13 +40,6 @@ const WorkToggler = ({state, setState}) => {
     updateState();
   })
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      updateState()
-    }, 1000);
-    return () => clearInterval(interval);
-  });
-
   return (
     <ToggleButton
       value="check"
@@ -60,5 +53,5 @@ const WorkToggler = ({state, setState}) => {
   );
 }
 
-export default WorkToggler;
+export default ActiveToggler;
 

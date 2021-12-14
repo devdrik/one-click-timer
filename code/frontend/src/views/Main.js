@@ -1,18 +1,36 @@
 import Talbe from '../components/Table'
-import WorkingTime from '../components/WorkingTime'
-import WorkToggler from '../components/WorkToggler'
+import ActiveTime from '../components/ActiveTime'
+import ActiveToggler from '../components/ActiveToggler'
 import { useState } from 'react';
+import SockJsClient from "react-stomp";
+import { WEBSOCKET_URL, topics } from '../config/config'
 
 const Main = () => {
 
   const [date, setDate] = useState(new Date());
-  const [state, setState] = useState(false)
+  const [state, setState] = useState("off")
+
+  const onMessageReceive = (msg, topic) => {
+    switch (topic) {
+      case topics.status:
+        setState(msg);
+        break;
+    
+      default:
+        break;
+    }
+  }
 
   return (
     <>
-      <WorkToggler state={state} setState={setState} />
-      <WorkingTime selectedDate={date} setSelectedDate={setDate} state={state}/>
+      <ActiveToggler state={state} setState={setState} />
+      <ActiveTime selectedDate={date} setSelectedDate={setDate} state={state}/>
       <Talbe selectedDate={date} state={state} />
+      <SockJsClient url={ WEBSOCKET_URL } topics={[topics.status]}
+        onMessage={ onMessageReceive } ref={ (client) => {}}
+        onConnect={ () => {} }
+        onDisconnect={ () => {} }
+        debug={ false }/>
     </>
   );
 }

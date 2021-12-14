@@ -3,7 +3,19 @@ import { getAllWorkingTimesByDate, updateWorkingTime } from '../services/Working
 import { useState, useEffect, useCallback } from 'react';
 import { locale } from '../config/config'
 
-const dateOptions = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+const dateOptions = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', timezone: 'Europe/Berlin' };
+const timeZoneOption = { timezone: 'Europe/Berlin' }
+
+const getLocaleDateString = dateString => {
+  let d = new Date(dateString)
+  d = new Date(d.getTime() - d.getTimezoneOffset() * 60 * 1000)
+  return d.toLocaleTimeString(locale, timeZoneOption)
+}
+
+const offsetDate = date => {
+  return new Date(date.getTime() + date.getTimezoneOffset() * 60 * 1000)
+}
+
 const columns = [
   {
     field: 'date',
@@ -21,7 +33,7 @@ const columns = [
     flex: 1,
     editable: true,
     valueGetter: params => params.value.createdDate,
-    valueFormatter: params => new Date(params.row.ON.createdDate).toLocaleTimeString()
+    valueFormatter: params => getLocaleDateString(params.row.ON.createdDate)
   },
   {
     field: 'OFF',
@@ -30,7 +42,7 @@ const columns = [
     flex: 1,
     editable: true,
     valueGetter: params => params.value.createdDate,
-    valueFormatter: params => new Date(params.row.OFF.createdDate).toLocaleTimeString()
+    valueFormatter: params => getLocaleDateString(params.row.OFF.createdDate)
   },
   {
     field: 'duration',
@@ -92,9 +104,8 @@ const Table = ({selectedDate, state}) => {
     })
     if(data[data.length-1] && data[data.length-1].state === 'ON') {
       entry.id = rowId;
-      entry.OFF = {createdDate: new Date()};
-      // This can lead to a wrong live duration, because locale might be off
-      entry.duration = new Date() - new Date(entry.ON.createdDate)
+      entry.OFF = {createdDate: offsetDate(new Date()) };
+      entry.duration = new Date(entry.OFF.createdDate) - new Date(entry.ON.createdDate)
       preparedData.push(entry);
     }
     return preparedData;
