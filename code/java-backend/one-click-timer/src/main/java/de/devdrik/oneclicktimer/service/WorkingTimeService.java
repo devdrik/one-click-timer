@@ -13,15 +13,19 @@ import org.springframework.stereotype.Service;
 import de.devdrik.oneclicktimer.enums.State;
 import de.devdrik.oneclicktimer.persistence.models.WorkingTime;
 import de.devdrik.oneclicktimer.persistence.repositories.WorkingTimeRepository;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 public class WorkingTimeService {
 
     private WorkingTimeRepository workingTimeRepository;
+    private WebSocketService webSocketService;
 
     @Autowired
-    WorkingTimeService(WorkingTimeRepository workingTimeRepository) {
+    WorkingTimeService(WorkingTimeRepository workingTimeRepository, WebSocketService webSocketService) {
         this.workingTimeRepository = workingTimeRepository;
+        this.webSocketService = webSocketService;
     }
     
     public String toggleTimer() {
@@ -31,7 +35,11 @@ public class WorkingTimeService {
 
         WorkingTime savedWorkingTime = workingTimeRepository.save(newWorkingTime);
 
-        return savedWorkingTime.getState().getStateString();
+        State newState = savedWorkingTime.getState();
+
+        webSocketService.sendState(newState);
+
+        return newState.getStateString();
     }
 
     public Iterable<WorkingTime> findAll() {
