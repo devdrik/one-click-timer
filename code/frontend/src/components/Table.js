@@ -1,9 +1,21 @@
 import { DataGrid } from '@mui/x-data-grid';
-import { getAllWorkingTimes, updateWorkingTime } from '../services/WorkingTimeService'
-import { useState, useEffect } from 'react';
+import { getAllWorkingTimesByDate, updateWorkingTime } from '../services/WorkingTimeService'
+import { useState, useEffect, useCallback } from 'react';
 import { locale } from '../config/config'
 
-const dateOptions = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+const dateOptions = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', timezone: 'Europe/Berlin' };
+const timeZoneOption = { timezone: 'Europe/Berlin' }
+
+const getLocaleDateString = dateString => {
+  let d = new Date(dateString)
+  d = new Date(d.getTime() - d.getTimezoneOffset() * 60 * 1000)
+  return d.toLocaleTimeString(locale, timeZoneOption)
+}
+
+const offsetDate = date => {
+  return new Date(date.getTime() + date.getTimezoneOffset() * 60 * 1000)
+}
+
 const columns = [
   {
     field: 'date',
@@ -21,7 +33,7 @@ const columns = [
     flex: 1,
     editable: true,
     valueGetter: params => params.value.createdDate,
-    valueFormatter: params => new Date(params.row.ON.createdDate).toLocaleTimeString()
+    valueFormatter: params => getLocaleDateString(params.row.ON.createdDate)
   },
   {
     field: 'OFF',
@@ -30,7 +42,7 @@ const columns = [
     flex: 1,
     editable: true,
     valueGetter: params => params.value.createdDate,
-    valueFormatter: params => new Date(params.row.OFF.createdDate).toLocaleTimeString()
+    valueFormatter: params => getLocaleDateString(params.row.OFF.createdDate)
   },
   {
     field: 'duration',
@@ -44,7 +56,7 @@ const columns = [
 
 let rawWorkingTimes = []
 
-const Table = () => {
+const Table = ({selectedDate, state}) => {
 
   const [workingTimes, setWorkingTimes] = useState([]);
 
@@ -61,7 +73,7 @@ const Table = () => {
     if (event.type === 'keydown') {
       event.preventDefault()
     }
-    let id, date;
+    let id, selectedDate;
     switch (event.type) {
       case 'click':
         id = params.row[params.field].id;
@@ -72,8 +84,8 @@ const Table = () => {
       default:
         id = undefined;
     }
-    date = params.value;
-    updateWorkingTimes(id, date);
+    selectedDate = params.value;
+    updateWorkingTimes(id, selectedDate);
   }
 
   const getPreparedData = data => {
@@ -92,20 +104,33 @@ const Table = () => {
     })
     if(data[data.length-1] && data[data.length-1].state === 'ON') {
       entry.id = rowId;
-      entry.OFF = {createdDate: new Date()};
-      // This can lead to a wrong live duration, because locale might be off
-      entry.duration = new Date() - new Date(entry.ON.createdDate)
+      entry.OFF = {createdDate: offsetDate(new Date()) };
+      entry.duration = new Date(entry.OFF.createdDate) - new Date(entry.ON.createdDate)
       preparedData.push(entry);
     }
     return preparedData;
   }
 
+  const getData = useCallback(
+    () => {
+      getAllWorkingTimesByDate(selectedDate).then(resp => {
+        rawWorkingTimes = resp.data;
+        setWorkingTimes(getPreparedData(rawWorkingTimes))
+      })
+    }, [selectedDate])
+
   useEffect(() => {
-    getAllWorkingTimes().then(resp => {
-      rawWorkingTimes = resp.data;
-      setWorkingTimes(getPreparedData(rawWorkingTimes))
-    })
-  }, [setWorkingTimes])
+    getData()
+  }, [getData])
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (state === 'on') {
+        getData()
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  });
 
   return (
     <div style={{ height: 650, width: '100%' }}>

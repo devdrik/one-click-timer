@@ -2,6 +2,7 @@ package de.devdrik.oneclicktimer.service;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Optional;
 
@@ -12,15 +13,19 @@ import org.springframework.stereotype.Service;
 import de.devdrik.oneclicktimer.enums.State;
 import de.devdrik.oneclicktimer.persistence.models.WorkingTime;
 import de.devdrik.oneclicktimer.persistence.repositories.WorkingTimeRepository;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 public class WorkingTimeService {
 
     private WorkingTimeRepository workingTimeRepository;
+    private WebSocketService webSocketService;
 
     @Autowired
-    WorkingTimeService(WorkingTimeRepository workingTimeRepository) {
+    WorkingTimeService(WorkingTimeRepository workingTimeRepository, WebSocketService webSocketService) {
         this.workingTimeRepository = workingTimeRepository;
+        this.webSocketService = webSocketService;
     }
     
     public String toggleTimer() {
@@ -30,7 +35,11 @@ public class WorkingTimeService {
 
         WorkingTime savedWorkingTime = workingTimeRepository.save(newWorkingTime);
 
-        return savedWorkingTime.getState().getStateString();
+        State newState = savedWorkingTime.getState();
+
+        webSocketService.sendState(newState);
+
+        return newState.getStateString();
     }
 
     public Iterable<WorkingTime> findAll() {
@@ -45,8 +54,12 @@ public class WorkingTimeService {
         return updated;
     }
 
+    public Collection<WorkingTime> findAllAtDate(LocalDateTime date) {
+        return workingTimeRepository.findAllBetween(date.toLocalDate().atStartOfDay(), date.toLocalDate().atTime(23, 59, 59));
+    }
+
     public Duration getCumulativeWorkingTimeOn(LocalDateTime date) {
-        Iterator<WorkingTime> timeList = workingTimeRepository.findAllBetween(date.toLocalDate().atStartOfDay(), date.toLocalDate().atTime(23, 59, 59)).iterator();
+        Iterator<WorkingTime> timeList = findAllAtDate(date).iterator();
         Duration duration = Duration.ZERO;
         LocalDateTime previousTime = null;
         WorkingTime current = null;

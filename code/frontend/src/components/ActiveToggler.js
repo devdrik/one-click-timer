@@ -6,8 +6,7 @@ import ToggleButton from '@mui/material/ToggleButton';
 import { toggleWorkingTime, getWorkingState } from '../services/WorkingTimeService'
 import { Typography } from '@material-ui/core';
 
-const WorkToggler = () => {
-  const [selected, setSelected] = React.useState(false);
+const ActiveToggler = ({state, setState}) => {
 
   const getActiveIcon = () => (
     <div>
@@ -25,39 +24,34 @@ const WorkToggler = () => {
 
   const toggle = () => {
     toggleWorkingTime().then(resp => {
-      let state;
-      switch (resp.data) {
-        case 'on':
-          state = true;
-          break;
-        case 'off':
-          state = false;
-          break;
-        default:
-          alert('we got an error');
-          state = selected;
-      }
-      setSelected(state);
+      setState(resp.data);
     })
   }
 
-  useEffect(() => {
+  const updateState = () => {
     getWorkingState().then(
-      resp => setSelected(resp.data === 'on')
-    )
-  }, [setSelected])
+      resp => setState(resp.data)
+    );
+  }
+
+  const isSelected = stateToCheck => stateToCheck === 'on'
+
+  useEffect(() => {
+    updateState();
+  })
 
   return (
     <ToggleButton
       value="check"
-      selected={selected}
+      selected={isSelected(state)}
       onChange={toggle}
       size="large"
       
     >
-      {selected ? getActiveIcon() : getInactiveIcon() }
+      {isSelected(state) ? getActiveIcon() : getInactiveIcon() }
     </ToggleButton>
   );
 }
 
-export default WorkToggler;
+export default ActiveToggler;
+

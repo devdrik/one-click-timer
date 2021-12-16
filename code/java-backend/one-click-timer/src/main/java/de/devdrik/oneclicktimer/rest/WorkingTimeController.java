@@ -51,6 +51,11 @@ public class WorkingTimeController {
         return new ResponseEntity<>(workingTimeService.findAll(), HttpStatus.OK);
     }
 
+    @GetMapping("/getallatdate")
+    public ResponseEntity<Iterable<WorkingTime>> getAllAtDate(@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime date) {
+        return new ResponseEntity<>(workingTimeService.findAllAtDate(date), HttpStatus.OK);
+    }
+
     @GetMapping("/getduration")
     public ResponseEntity<Duration> getDuration(@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime date) {
         return new ResponseEntity<>(workingTimeService.getCumulativeWorkingTimeOn(date), HttpStatus.OK);
