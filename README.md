@@ -1,6 +1,6 @@
 # One Click Timer
 
-https://user-images.githubusercontent.com/67547895/147934251-26725f35-dbc0-4176-8e39-91f67eb317d6.mp4
+https://user-images.githubusercontent.com/67547895/147934942-3e0310ca-94bd-4c52-a826-1772c6c41a12.mp4
 
 Time yourself with a simple click!
 
