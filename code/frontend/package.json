@@ -23,7 +23,7 @@
   },
   "overrides": {
     "minimist": "^1.2.6",
-    "immer": ">=9.0.6"
+    "immer": "^9.0.6"
   },
   "scripts": {
     "start": "react-scripts start",
