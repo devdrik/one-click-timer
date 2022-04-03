@@ -1,5 +1,5 @@
 ARG APP_NAME=one-click-timer
-ARG APP_VERSION=1.0.2-SNAPSHOT
+ARG APP_VERSION=1.0.3-SNAPSHOT
 
 FROM maven:3.8.3-openjdk-17 AS build
 COPY src /usr/src/app/src
